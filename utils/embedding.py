@@ -1,6 +1,7 @@
 import requests
 import numpy as np
 import os
+import certifi
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -13,5 +14,7 @@ def get_embedding(text, model="text-embedding-3-small"):
         "Content-Type": "application/json"
     }
     payload = {"input": text, "model": model}
-    response = requests.post(url, headers=headers, json=payload)
+    #response = requests.post(url, headers=headers, json=payload)
+   
+    response = requests.post(url, headers=headers, json=payload, verify=False)
     return np.array(response.json()['data'][0]['embedding'])

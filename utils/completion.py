@@ -16,5 +16,17 @@ def generate_completion(prompt, model="gpt-4.1-nano", temperature=0.3):
         "max_tokens": 500,
         "temperature": temperature
     }
-    res = requests.post(url, headers=headers, json=payload)
-    return res.json()['choices'][0]['message']['content']
+    try:
+        res = requests.post(url, headers=headers, json=payload, verify=False)  # or use certifi
+        res.raise_for_status()  # Raises error for 4xx/5xx responses
+        data = res.json()
+
+        if "choices" in data:
+            return data['choices'][0]['message']['content']
+        else:
+            return f"⚠️ Unexpected API response: {data}"
+
+    except requests.exceptions.RequestException as e:
+        return f"❌ Request failed: {str(e)}"
+    except Exception as e:
+        return f"❌ Something went wrong: {str(e)}"
